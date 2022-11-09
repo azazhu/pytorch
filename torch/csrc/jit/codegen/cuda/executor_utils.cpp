@@ -823,7 +823,7 @@ kir::ExpressionEvaluator bindKernelInputs(
           }
         }
 
-        const auto value = root_domain[dim]->hasExpandedExtent()
+        auto value = root_domain[dim]->hasExpandedExtent()
             ? 1
             : aten_tensor.sizes()[dim];
         if (value == 0 && tensor_input->uses().empty()) {
@@ -835,6 +835,9 @@ kir::ExpressionEvaluator bindKernelInputs(
         if (check_consistency) {
           const auto prev_value = expr_eval.evaluate(extent);
           if (prev_value.has_value()) {
+            if (tensor_input->isLookupTV()) {
+              value = *prev_value;
+            }
             TORCH_CHECK(
                 *prev_value == value,
                 "Attempting to bind ",

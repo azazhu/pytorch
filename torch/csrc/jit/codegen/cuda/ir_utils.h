@@ -304,6 +304,9 @@ TORCH_CUDA_CU_API std::vector<Expr*> getReductionOps(
     Fusion* fusion,
     bool ignore_trivial = true);
 
+TORCH_CUDA_CU_API std::vector<Expr*> getIndexSelectOps(
+    Fusion* fusion);
+
 // Returns the initialization value of tv or nullptr if not initialized.
 TORCH_CUDA_CU_API Val* getReductionInitValOf(TensorView* tv);
 

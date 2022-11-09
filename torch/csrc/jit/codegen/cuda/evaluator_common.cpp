@@ -196,7 +196,8 @@ template <typename IRContext>
 void PrecomputedIntegersBase<IRContext>::validate() {
   FUSER_PERF_SCOPE("PrecomputedIntegers::Validate");
   for (auto it : binding_log_) {
-    TORCH_INTERNAL_ASSERT(values_[it.first] == it.second);
+    TORCH_INTERNAL_ASSERT(
+        values_[it.first] == it.second, values_[it.first], "!=", it.second);
   }
   has_valid_values_ = true;
 }
@@ -386,6 +387,10 @@ KernelPrecomputedIntegers::KernelPrecomputedIntegers(kir::Kernel* kernel) {
 void KernelPrecomputedIntegers::bindTensorMetaData(
     TensorView* tv,
     const at::Tensor& at_tensor) {
+  // if tv is a lookup tv, don't bind its shapes to computation's extents
+  if (tv->isLookupTV()) {
+    return;
+  }
   std::vector<std::pair<Val*, int64_t>> ret;
   const auto root_domain =
       TensorDomain::noReductions(tv->domain()->getMaybeRFactorDomain());
@@ -396,6 +401,8 @@ void KernelPrecomputedIntegers::bindTensorMetaData(
   for (const auto dim : c10::irange(root_domain.size())) {
     auto extent = root_domain[dim]->extent();
     auto value = at_tensor.sizes()[dim];
+    TORCH_INTERNAL_ASSERT(
+        !root_domain[dim]->isLookupIterType(), "Cannot bind lookup axis: ");
     bindValue(extent->evaluatorIndex(), value);
   }
 }
@@ -458,8 +465,8 @@ void KernelPrecomputedIntegers::bindParallelExtents(
     const ParallelExtentMap& parallel_extents,
     const LaunchParams& launch_constraint) {
   // Bind integer values of extents of parallelized
-  //  iterdomains from launch_constraint when applicable.
   // Consistency will be checked at validate().
+  //  iterdomains from launch_constraint when applicable.
   for (const auto& it : parallel_extents) {
     auto raw_val = launch_constraint.getRawVal(it.first);
     if (raw_val > 0) {

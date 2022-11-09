@@ -71,6 +71,7 @@ class NamedScalar;
 class UnaryOp;
 class BinaryOp;
 class TernaryOp;
+class IndexSelectOp;
 class ReductionOp;
 class GroupedReductionOp;
 class WelfordOp;
@@ -143,6 +144,7 @@ class TORCH_CUDA_CU_API OptOutConstDispatch : public PolymorphicBase {
   virtual void handle(const UnaryOp* stmt);
   virtual void handle(const BinaryOp* stmt);
   virtual void handle(const TernaryOp* stmt);
+  virtual void handle(const IndexSelectOp* stmt);
   virtual void handle(const ReductionOp* stmt);
   virtual void handle(const GroupedReductionOp* stmt);
   virtual void handle(const WelfordOp* stmt);
@@ -206,6 +208,7 @@ class TORCH_CUDA_CU_API OptOutDispatch : public PolymorphicBase {
   virtual void handle(UnaryOp* stmt);
   virtual void handle(BinaryOp* stmt);
   virtual void handle(TernaryOp* stmt);
+  virtual void handle(IndexSelectOp* stmt); //aza
   virtual void handle(ReductionOp* stmt);
   virtual void handle(GroupedReductionOp* stmt);
   virtual void handle(WelfordOp* stmt);
@@ -310,6 +313,7 @@ class TORCH_CUDA_CU_API OptOutMutator : public PolymorphicBase {
   virtual void mutate(UnaryOp*);
   virtual void mutate(BinaryOp*);
   virtual void mutate(TernaryOp*);
+  virtual void mutate(IndexSelectOp*);
   virtual void mutate(ReductionOp*);
   virtual void mutate(GroupedReductionOp*);
   virtual void mutate(WelfordOp*);

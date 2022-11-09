@@ -21,6 +21,7 @@ auto parseDebugDumpOptions() {
       {DebugDumpOption::FusionIrPresched, false},
       {DebugDumpOption::KernelIr, false},
       {DebugDumpOption::ComputeAtMap, false},
+      {DebugDumpOption::PassTransform, false},
       {DebugDumpOption::CudaKernel, false},
       {DebugDumpOption::CudaFull, false},
       {DebugDumpOption::CudaToFile, false},
@@ -100,6 +101,8 @@ auto parseDebugDumpOptions() {
         options_map[DebugDumpOption::TransformPropagator] = true;
       } else if (token == "inline_propagator") {
         options_map[DebugDumpOption::InlinePropagator] = true;
+      } else if (token == "lower2device") {
+        options_map[DebugDumpOption::PassTransform] = true;
       } else {
         TORCH_CHECK(
             false,

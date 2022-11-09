@@ -1169,10 +1169,12 @@ class AllocateReuseModifier {
 
   // Do we have a true pointwise op?
   // (ie. a TV op, excluding direct assignments and reductions)
+  // IndexSelectOp uses pointwise schedule, but its index calculation is
+  // different from pointwise.
   bool isPointwiseTvOp(const Expr* expr) {
     if (ir_utils::isTvOp(expr)) {
       return expr->isA<UnaryOp>() || expr->isA<BinaryOp>() ||
-          expr->isA<TernaryOp>();
+          expr->isA<TernaryOp>() || expr->isA<IndexSelectOp>();
     }
     return false;
   }

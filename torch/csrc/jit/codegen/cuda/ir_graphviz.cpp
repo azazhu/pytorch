@@ -443,6 +443,20 @@ void IrGraphGenerator::handle(const TernaryOp* op) {
   addArc(op, op->out());
 }
 
+void IrGraphGenerator::handle(const IndexSelectOp* op) {
+  // node
+  std::stringstream label;
+
+  label << "index_select";
+  printExpr(op, label.str());
+
+  // inputs & outputs
+  addArc(op->in1(), op);
+  addArc(IrBuilder::create<Int>(op->in2()), op, "[color=blue]");
+  addArc(op->in3(), op, "[color=brown]");
+  addArc(op, op->out());
+}
+
 void IrGraphGenerator::handle(const BroadcastOp* op) {
   printExpr(op, "Broadcast");
   addArc(op->in(), op);

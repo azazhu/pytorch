@@ -860,6 +860,19 @@ class ReductionScheduler : public SchedulerEntry {
       return false;
     }
 
+    auto idx_sel_ops =
+        ir_utils::getIndexSelectOps(fusion);
+    if (!idx_sel_ops.empty()) {
+      for(auto idx_sel : idx_sel_ops) {
+        if (!idx_sel->as<IndexSelectOp>()->in1()->isFusionInput()) {
+          scheduler_debug_utils::canScheduleRejectReason(
+              ScheduleHeuristic::PointWise,
+              "no support index select op's input0 as consumer");
+          return false;
+        }
+      }
+    }
+
     if (hasNonUniqueBcast(fusion)) {
       scheduler_debug_utils::canScheduleRejectReason(
           ScheduleHeuristic::Reduction,
@@ -995,6 +1008,19 @@ class PointWiseScheduler : public SchedulerEntry {
       return false;
     }
 
+    auto idx_sel_ops =
+        ir_utils::getIndexSelectOps(fusion);
+    if (!idx_sel_ops.empty()) {
+      for(auto idx_sel : idx_sel_ops) {
+        if (!idx_sel->as<IndexSelectOp>()->in1()->isFusionInput()) {
+          scheduler_debug_utils::canScheduleRejectReason(
+              ScheduleHeuristic::PointWise,
+              "no support index select op's input0 as consumer");
+          return false;
+        }
+      }
+    }
+
     if (hasNonUniqueBcast(fusion)) {
       scheduler_debug_utils::canScheduleRejectReason(
           ScheduleHeuristic::PointWise,
@@ -1057,6 +1083,19 @@ class PersistentKernelScheduler : public SchedulerEntry {
       scheduler_debug_utils::canScheduleRejectReason(
           ScheduleHeuristic::Persistent, "no support for view");
       return false;
+    }
+
+    auto idx_sel_ops =
+        ir_utils::getIndexSelectOps(fusion);
+    if (!idx_sel_ops.empty()) {
+      for(auto idx_sel : idx_sel_ops) {
+        if (!idx_sel->as<IndexSelectOp>()->in1()->isFusionInput()) {
+          scheduler_debug_utils::canScheduleRejectReason(
+              ScheduleHeuristic::PointWise,
+              "no support index select op's input0 as consumer");
+          return false;
+        }
+      }
     }
 
     if (hasNonUniqueBcast(fusion)) {
